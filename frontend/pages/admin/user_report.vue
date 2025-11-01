@@ -1,6 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
   <div class="container mx-auto p-6">
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center min-h-64">
@@ -173,7 +171,6 @@
       >
         <i class="fas fa-print mr-2"></i>พิมพ์รายงาน
       </button>
-    </div>
     </div>
   </div>
   </div>

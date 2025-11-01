@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  compatibilityDate: '2025-10-31',
   
   modules: [
     '@nuxtjs/tailwindcss',
@@ -9,7 +10,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   
   app: {
-    baseURL: '/360/',
+    baseURL: '/feedback360/',
     head: {
       title: 'FEEDBACK 360',
       meta: [
@@ -23,13 +24,13 @@ export default defineNuxtConfig({
   
   runtimeConfig: {
     public: {
-      apiBaseUrl: 'http://localhost/360/Backend',
+      apiBaseUrl: 'http://localhost/feedback360/Backend',
       appName: 'FEEDBACK 360'
     }
   },
   
   devServer: {
-    port: 8000,
+    port: 3030,
     host: 'localhost'
   },
   

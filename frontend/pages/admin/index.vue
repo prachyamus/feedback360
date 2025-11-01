@@ -1,6 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
   <div class="container mx-auto p-6">
     <!-- Welcome Section -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-2xl p-8 mb-8 text-white">
@@ -255,7 +253,6 @@
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 

@@ -1,7 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
-    
     <div class="container mx-auto p-6">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold text-blue-600">
@@ -172,7 +169,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>

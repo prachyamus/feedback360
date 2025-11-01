@@ -1,6 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
   <div class="container mx-auto p-6">
     <h3 class="text-center text-3xl font-bold text-blue-600 mb-8">
       <i class="fas fa-users-viewfinder mr-2"></i>รายชื่อผู้ที่ถูกประเมิน
@@ -123,7 +121,6 @@
         </button>
       </div>
     </div>
-  </div>
   </div>
 </template>
 

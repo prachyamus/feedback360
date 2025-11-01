@@ -1,7 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <MainNavbar />
-    
     <div class="container mx-auto p-6">
       <h3 class="text-center text-2xl font-bold mb-6">รายชื่อผู้เข้าร่วมโครงการ</h3>
 
@@ -84,15 +81,20 @@
       <div v-if="!loading && filteredEmployees.length === 0" class="text-center py-8 text-gray-500">
         ไม่พบข้อมูลพนักงาน
       </div>
+      </div>
     </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
+import axios from 'axios'
+import { useToast } from 'vue-toastification'
+
 definePageMeta({
   layout: 'default'
 })
+
+const toast = useToast()
+const { showConfirm } = useConfirm()
 
 const searchKeyword = ref('')
 const rounded = ref('5')
@@ -128,17 +130,14 @@ const loadData = async () => {
     }
     
     const config = useRuntimeConfig()
-    const response = await $fetch(config.public.apiBaseUrl + '/api/fetch_user_survey.php', {
-      method: 'POST',
-      credentials: 'include',
-      body: {
-        em_id: emId,
-        rounded: rounded.value
-      }
+    const response = await axios.post(config.public.apiBaseUrl + '/api/fetch_user_survey.php', {
+      em_id: emId,
+      rounded: rounded.value
     })
     
-    if (response && response.success) {
-      const data = response.data
+    if (response && response.data.success) {
+      console.log(response.data)
+      const data = response.data.data
       
       if (data.important) {
         data.important.forEach(item => {

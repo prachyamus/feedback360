@@ -1,7 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
-    
     <div class="container mx-auto p-6">
       <div class="mb-6">
         <h3 class="text-2xl font-bold text-blue-600 text-center">
@@ -54,7 +51,6 @@
         </EasyDataTable>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>

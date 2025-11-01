@@ -1,6 +1,4 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <AdminNavbar />
   <div class="container mx-auto p-6">
     <h3 class="text-center text-3xl font-bold text-blue-600 mb-8">
       <i class="fas fa-chart-radar mr-2"></i>Spider Chart - กราฟแสดงผลการประเมิน
@@ -108,7 +106,6 @@
     <div v-else-if="selectedUser && selectedSubject" class="text-center py-12">
       <div class="text-gray-500 text-lg">กดปุ่ม "สร้างกราฟ" เพื่อดูผลลัพธ์</div>
     </div>
-  </div>
   </div>
 </template>
 
