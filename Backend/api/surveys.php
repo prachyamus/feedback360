@@ -21,26 +21,27 @@ function handleFetchOnce($id) {
     }
 }
 
-function handleFetchAll($rounded = '') {
+function handleFetchAll() {
     global $conn;
-    
-    if ($rounded !== '') {
-        $sql = "SELECT s.*, b.ban_title FROM s_subject s LEFT JOIN s_band b ON s.sub_band = b.ban_id WHERE s.rounded = ? ORDER BY s.sub_id DESC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $rounded);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    } else {
-        $sql = "SELECT s.*, b.ban_title FROM s_subject s LEFT JOIN s_band b ON s.sub_band = b.ban_id ORDER BY s.sub_id DESC";
+
+        $sql = "SELECT s.*, b.ban_title FROM s_subject s LEFT JOIN s_band b ON s.sub_band = b.ban_id WHERE 1 ORDER BY s.sub_id DESC";
         $result = $conn->query($sql);
-    }
-    
-    $surveys = [];
+        $rows = [];
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return ['success' => true, 'data' => $rows];
+}
+
+function handleFetchAllActive() {
+    global $conn;
+    $sql = "SELECT s.*, b.ban_title FROM s_subject s LEFT JOIN s_band b ON s.sub_band = b.ban_id WHERE s.sub_status = 1 ORDER BY s.sub_id DESC";
+    $result = $conn->query($sql);
+    $rows = [];
     while ($row = $result->fetch_assoc()) {
-        $surveys[] = $row;
+        $rows[] = $row;
     }
-    
-    return ['success' => true, 'data' => $surveys];
+    return ['success' => true, 'data' => $rows];
 }
 
 function handleSave($data) {
@@ -54,16 +55,12 @@ function handleSave($data) {
     $sub_band = $data['sub_band'];
     $type_group = $data['type_group'];
     $sub_status = $data['sub_status'];
-    $rounded = $data['rounded'];
-    $sumary_chart = $data['sumary_chart'];
-    $sumary_group = $data['sumary_group'];
-    $sumary_question = $data['sumary_question'];
     
     if ($sub_id === '') {
-        $sql = "INSERT INTO s_subject (sub_title, sub_title_m, sub_discrip, sub_discrip_m, sub_band, type_group, sub_status, rounded, sumary_chart, sumary_group, sumary_question) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO s_subject (sub_title, sub_title_m, sub_discrip, sub_discrip_m, sub_band, type_group, sub_status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssssssssss', $sub_title, $sub_title_m, $sub_discrip, $sub_discrip_m, $sub_band, $type_group, $sub_status, $rounded, $sumary_chart, $sumary_group, $sumary_question);
+        $stmt->bind_param('sssssss', $sub_title, $sub_title_m, $sub_discrip, $sub_discrip_m, $sub_band, $type_group, $sub_status);
         
         if ($stmt->execute()) {
             return ['success' => true, 'message' => 'เพิ่มแบบสำรวจสำเร็จ', 'id' => $conn->insert_id];
@@ -78,13 +75,10 @@ function handleSave($data) {
                 sub_discrip_m = ?,
                 sub_band = ?,
                 type_group = ?,
-                sub_status = ?,
-                sumary_chart = ?,
-                sumary_group = ?,
-                sumary_question = ?
+                sub_status = ?
                 WHERE sub_id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ssssssssssi', $sub_title, $sub_title_m, $sub_discrip, $sub_discrip_m, $sub_band, $type_group, $sub_status, $sumary_chart, $sumary_group, $sumary_question, $sub_id);
+        $stmt->bind_param('sssssssi', $sub_title, $sub_title_m, $sub_discrip, $sub_discrip_m, $sub_band, $type_group, $sub_status, $sub_id);
         
         if ($stmt->execute()) {
             return ['success' => true, 'message' => 'อัปเดตแบบสำรวจสำเร็จ'];
@@ -129,6 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         case 'list':
             $rounded = isset($_POST['rounded']) ? $_POST['rounded'] : '';
             $res = handleFetchAll($rounded);
+            break;
+        case 'list-active':
+            $res = handleFetchAllActive();
             break;
         case 'save':
             $res = handleSave($_POST);

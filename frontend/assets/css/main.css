@@ -45,6 +45,14 @@ body {
   
   --easy-table-loading-mask-background-color: rgba(255, 255, 255, 0.9);
 }
+:deep(.pagination__rows-per-page) {
+  display: none;
+}
+
+:deep(.pagination__items-index) {
+  display: none;
+}
+
 
 /* เพิ่มความสวยงาม */
 .customize-table table {

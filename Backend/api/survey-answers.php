@@ -74,24 +74,32 @@ function getSurveyAnswers($conn) {
 }
 
 function handlePost($conn) {
-    $data = getPostData();
-    $action = isset($data['action']) ? $data['action'] : '';
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+    } else {
+        $data = getPostData();
+        $action = isset($data['action']) ? $data['action'] : '';
+    }
     
     switch ($action) {
         case 'save':
-            saveSurveyAnswer($data, $conn);
+            saveSurveyAnswer($_POST, $conn);
             break;
         
         case 'bulk_save':
-            saveBulkSurveyAnswers($data, $conn);
+            saveBulkSurveyAnswers($_POST, $conn);
+            break;
+        
+        case 'submit':
+            submitSurveyAnswers($_POST, $conn);
             break;
         
         case 'delete':
-            deleteSurveyAnswer($data, $conn);
+            deleteSurveyAnswer($_POST, $conn);
             break;
         
         default:
-            sendErrorResponse('Invalid action. Supported actions: save, bulk_save, delete');
+            sendErrorResponse('Invalid action. Supported actions: save, bulk_save, submit, delete');
     }
 }
 
@@ -154,6 +162,55 @@ function saveBulkSurveyAnswers($data, $conn) {
         
         $conn->commit();
         sendJsonResponse(array('message' => 'บันทึกคำตอบทั้งหมดสำเร็จ'), 201);
+    } catch (Exception $e) {
+        $conn->rollback();
+        sendErrorResponse('Failed to save answers: ' . $e->getMessage(), 500);
+    }
+}
+
+function submitSurveyAnswers($data, $conn) {
+    $sub_id = isset($data['sub_id']) ? $data['sub_id'] : '';
+    $person_id = isset($data['person_id']) ? $data['person_id'] : '';
+    $whotype_id = isset($data['whotype_id']) ? $data['whotype_id'] : '';
+    $rounded = isset($data['rounded']) ? $data['rounded'] : '';
+    $emp_id = isset($data['emp_id']) ? $data['emp_id'] : '';
+    
+    if (!$sub_id || !$person_id || !$rounded || !$emp_id) {
+        sendErrorResponse('Missing required fields: sub_id, person_id, rounded, emp_id');
+        return;
+    }
+    
+    $conn->begin_transaction();
+    
+    try {
+        $answers = [];
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'answer_') === 0) {
+                $que_id = str_replace('answer_', '', $key);
+                $answers[] = [
+                    'que_id' => $que_id,
+                    'value' => $value
+                ];
+            }
+        }
+        
+        foreach ($answers as $answer) {
+            $que_id = $answer['que_id'];
+            $value = $answer['value'];
+            
+            $sql = "INSERT INTO survey_answer (emp_id, person_id, sub_id, que_id, answer_score, whotype_id, rounded, created_at) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+                    ON DUPLICATE KEY UPDATE 
+                    answer_score = VALUES(answer_score),
+                    updated_at = NOW()";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssssss", $emp_id, $person_id, $sub_id, $que_id, $value, $whotype_id, $rounded);
+            $stmt->execute();
+        }
+        
+        $conn->commit();
+        sendJsonResponse(['success' => true, 'message' => 'บันทึกคำตอบทั้งหมดสำเร็จ'], 201);
     } catch (Exception $e) {
         $conn->rollback();
         sendErrorResponse('Failed to save answers: ' . $e->getMessage(), 500);

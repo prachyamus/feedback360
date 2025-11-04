@@ -2,6 +2,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-10-31',
   
+  ssr: false,
+  
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
@@ -32,6 +34,13 @@ export default defineNuxtConfig({
   devServer: {
     port: 3030,
     host: 'localhost'
+  },
+  
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      fallback: true
+    }
   },
   
 })

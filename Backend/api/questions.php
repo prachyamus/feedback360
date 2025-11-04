@@ -4,14 +4,13 @@ include '../config/database.php';
 include '../config/cors.php';
 include '../utils/helpers.php';
 
-function listQuestions($id, $group) {
+function listQuestions($sub_id) {
     global $conn;
-    $sql = "SELECT * FROM `s_question` LEFT JOIN question_group 
-                                ON s_question.que_group =question_group.que_group
-                                WHERE s_question.sub_id= ? AND question_group.group_report= ?
-                                GROUP BY s_question.que_id";
+    $sql = "SELECT * FROM `s_question` 
+            WHERE sub_id = ? 
+            ORDER BY que_num ASC, que_id ASC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ii', $id, $group);
+    $stmt->bind_param('i', $sub_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $rows = [];
@@ -20,11 +19,7 @@ function listQuestions($id, $group) {
     }
     $stmt->close();
     
-    if ($rows) {
-        return ['success' => true, 'data' => $rows];
-    } else {
-        return ['success' => false, 'message' => 'Question not found'];
-    }
+    return ['success' => true, 'data' => $rows];
 }
 
 // function handleFetchAll($subject_id = '') {
@@ -137,7 +132,12 @@ if (isset($_POST['action'])) {
 
     switch ($action) {
         case 'fetch':
-            $res = listQuestions($_POST['id'], $_POST['group']);
+            $sub_id = isset($_POST['sub_id']) ? $_POST['sub_id'] : '';
+            if ($sub_id === '') {
+                $res = ['success' => false, 'message' => 'sub_id is required'];
+            } else {
+                $res = listQuestions($sub_id);
+            }
             break;
         case 'create':
             $res = handleSave($_POST);

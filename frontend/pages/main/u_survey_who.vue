@@ -33,17 +33,12 @@
 
 <script setup>
 import axios from 'axios'
-import { useToast } from 'vue-toastification'
 
 definePageMeta({
   layout: 'default'
 })
 
-const toast = useToast()
-const { showConfirm } = useConfirm()
-
 const config = useRuntimeConfig()
-const apiBaseUrl = config.public.apiBaseUrl + '/api/fetch_user_survey.php'
 const employeeDataUrl = config.public.apiBaseUrl + '/api/employee_data.php'
 const selectedType = ref('')
 const targetPerson = ref('Loading...')
@@ -57,14 +52,15 @@ const emp_position = ref('')
 const E_Code = useCookie('E_Code')
 //การค่า Get จาก URL
 const route = useRoute()
-const emp_id = route.query.id
+const emp_id = route.query.person_id
 const emp_level = route.query.band
 const rounded = route.query.rounded
 
-// Normalize for reliable comparisons (refresh/SSR safe)
+// Normalize เพื่อให้การเปรียบเทียบข้อมูลสะดวกขึ้น (refresh/SSR safe)
 const normalizedECode = computed(() => String(E_Code.value || '').trim())
 const normalizedEmpId = computed(() => String(emp_id || '').trim())
 
+//สิทธิ์ประเมินตามสิทธิ์ผู้ใช้งาน
 const allEvaluators = [
   {
     id: '1',
@@ -92,10 +88,11 @@ const allEvaluators = [
   }
 ]
 
+//กรองรายการประเมินตามสิทธิ์ผู้ใช้งาน
 const visibleEvaluators = computed(() => allEvaluators.filter(e => e.visibleWhen()))
 
-
-const loadData = async () => {
+//ดึงข้อมูลพนักงานจาก ERP
+const loadEmployeeData = async () => {
   try {
     const response = await axios.get(employeeDataUrl + '?emp_id=' + emp_id)
     emp_image.value = 'http://' + response.data.ImagePath
@@ -111,6 +108,6 @@ const selectEvaluator = (type) => {
 }
 
 onMounted(() => {
-  loadData();
+  loadEmployeeData();
 })
 </script>

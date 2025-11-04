@@ -36,7 +36,7 @@
           <template #item-actions="item">
             <div class="flex justify-center">
               <NuxtLink 
-                :to="`/admin/user_subject_report?id=${item.emp_id}&band=${item.emp_level}&name=${item.emp_fname} ${item.emp_lname}`"
+                :to="`/admin/report_list_subject?person_id=${item.emp_id}`"
                 class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                 <i class="fas fa-chart-line mr-1"></i>สรุปผล
               </NuxtLink>
@@ -63,7 +63,7 @@ definePageMeta({
 
 const toast = useToast()
 const config = useRuntimeConfig()
-const apiBaseUrl = config.public.apiBaseUrl + '/api/reports.php'
+const apiBaseUrl = config.public.apiBaseUrl + '/api/reports_user_list.php'
 
 const employees = ref([])
 const loading = ref(false)

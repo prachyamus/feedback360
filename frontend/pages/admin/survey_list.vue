@@ -11,10 +11,20 @@
       </div>
 
       <div class="mb-4 bg-white p-4 rounded-lg shadow-md">
-        <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
-        <input v-model="searchValue" type="text"
-          class="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="ค้นหาจากชื่อหัวข้อ, คำอธิบาย...">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
+            <input v-model="searchValue" type="text"
+              class="w-full md:w-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="ค้นหาจากชื่อหัวข้อ, คำอธิบาย...">
+          </div>
+          <div>
+            <button @click="exportToExcel"
+              class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+              <i class="fas fa-file-excel mr-2"></i>Export Excel
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="bg-white rounded-lg shadow-md overflow-hidden p-4">
@@ -32,6 +42,7 @@
           buttons-pagination
           theme-color="#2563eb"
           table-class-name="customize-table"
+          hide-rows-per-page
         >
           <template #item-sub_title="{ sub_title }">
             <span class="font-semibold text-gray-900">{{ sub_title }}</span>
@@ -53,16 +64,16 @@
           <template #item-actions="item">
             <div class="flex justify-center space-x-2">
               <button @click="editSurvey(item)" 
-                class="text-blue-600 hover:text-blue-900" title="แก้ไข">
-                <i class="fas fa-edit"></i>
+                class="bg-blue-600 text-white px-2 py-1 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" title="แก้ไข">
+                <i class="fas fa-pencil-alt"></i>
               </button>
-              <NuxtLink :to="`/admin/question_list?id=${item.sub_id}&group=${item.type_group}`" 
-                class="text-green-600 hover:text-green-900" title="จัดการคำถาม">
+              <NuxtLink :to="`/admin/question_list?sub_id=${item.sub_id}&group_id=${item.type_group}`" 
+                class="bg-green-600 text-white px-2 py-1 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" title="จัดการคำถาม">
                 <i class="fas fa-list"></i>
               </NuxtLink>
               <button @click="deleteSurvey(item.sub_id)" 
-                class="text-red-600 hover:text-red-900" title="ลบ">
-                <i class="fas fa-trash"></i>
+                class="bg-red-600 text-white px-2 py-1 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" title="ลบ">
+                <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </template>
@@ -160,31 +171,6 @@
               </div>
             </div>
             
-            <div class="border-t pt-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-3">การสรุปผล</h4>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Summary Chart</label>
-                  <input v-model="form.sumary_chart" type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Summary Chart" />
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Summary Group</label>
-                  <input v-model="form.sumary_group" type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Summary Group" />
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Summary Question</label>
-                  <input v-model="form.sumary_question" type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Summary Question" />
-                </div>
-              </div>
-            </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button type="button" @click="closeModal" 
@@ -226,6 +212,7 @@ const showModal = ref(false)
 const isEdit = ref(false)
 const searchValue = ref('')
 
+//กำหนดค่าให้ Datatable
 const headers = [
   { text: 'ID', value: 'sub_id', sortable: true, width: 80 },
   { text: 'ชื่อหัวข้อ', value: 'sub_title', sortable: true },
@@ -244,10 +231,7 @@ const form = ref({
   sub_discrip_m: '',
   sub_band: '',
   type_group: '1',
-  sub_status: '1',
-  sumary_chart: '',
-  sumary_group: '',
-  sumary_question: ''
+  sub_status: '1'
 })
 
 const loadSurveys = async () => {
@@ -255,7 +239,7 @@ const loadSurveys = async () => {
   
   try {
     const response = await axios.get(apiBaseUrl, { withCredentials: true })
-    
+    console.log(response.data);
     if (response.data && response.data.success) {
       surveys.value = response.data.data || []
     }
@@ -289,10 +273,7 @@ const openModal = () => {
     sub_discrip_m: '',
     sub_band: '',
     type_group: '1',
-    sub_status: '1',
-    sumary_chart: '',
-    sumary_group: '',
-    sumary_question: ''
+    sub_status: '1'
   }
   showModal.value = true
 }
@@ -361,6 +342,21 @@ const getTypeGroupText = (type_group) => {
     case '3': return 'band 10 ขึ้นไปแบบใหม่'
     default: return '-'
   }
+}
+
+const { exportToExcel: exportExcel } = useExport()
+
+const exportToExcel = () => {
+  const data = surveys.value.map(survey => ({
+    'ID': survey.sub_id,
+    'หัวข้อการประเมิน': survey.sub_title,
+    'คำอธิบาย': survey.sub_discrip,
+    'ระดับแบนด์': survey.ban_title || '-',
+    'กลุ่มรายงาน': getTypeGroupText(survey.type_group),
+    'สถานะ': survey.sub_status == 1 ? 'เปิด' : 'ปิด'
+  }))
+  
+  exportExcel(data, 'surveys', 'รายการแบบสำรวจ')
 }
 
 onMounted(() => {

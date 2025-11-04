@@ -64,7 +64,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-center">
                 <button @click="viewSurvey(survey.sub_id)"
                   class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-colors">
-                  เริ่มแบบสำรวจ
+                <i class="fas fa-search mr-1"></i>ดูสรุปผล
                 </button>
               </td>
             </tr>
@@ -83,7 +83,7 @@
 import axios from "axios";
 
 definePageMeta({
-  layout: "default",
+  layout: "admin",
 });
 
 //ค่าจาก ERP
@@ -101,7 +101,7 @@ const rounded = route.query.rounded;
 
 const config = useRuntimeConfig();
 const employeeDataUrl = config.public.apiBaseUrl + "/api/employee_data.php";
-const surveysUrl = config.public.apiBaseUrl + "/api/surveys.php";
+const surveysUrl = config.public.apiBaseUrl + "/api/report_user_subject.php";
 
 //ดึงข้อมูลพนักงานจาก ERP
 const loadEmployeeData = async () => {
@@ -123,7 +123,7 @@ const loadSurveys = async () => {
     const type = route.query.whotype_id || "";
     const form = new FormData();
     form.append("action", "list-active");
-    const res = await axios.post(surveysUrl, form);
+    const res = await axios.get(surveysUrl + "?emp_id=" + emp_id);
     if (res && res.data && res.data.success) {
       surveys.value = res.data.data || [];
     }
@@ -137,12 +137,9 @@ const getStatusClass = (status) => {
 };
 
 const viewSurvey = (subId) => {
-  const person_id = route.query.person_id || "";
-  const whotype_id = route.query.whotype_id || "";
-  const rounded = route.query.rounded || "";
 
   navigateTo(
-    `/main/u_survey_detail?sub_id=${subId}&person_id=${person_id}&whotype_id=${whotype_id}&rounded=${rounded}`
+    `/admin/report_user_subject_detail?sub_id=${subId}&person_id=${emp_id}`
   );
 };
 

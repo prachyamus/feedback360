@@ -196,7 +196,7 @@ const apiBaseUrl = config.public.apiBaseUrl + '/api/questions.php'
 const questionGroupsUrl = config.public.apiBaseUrl + '/api/question-groups.php'
 const surveysUrl = config.public.apiBaseUrl + '/api/surveys.php'
 
-const surveyId = route.query.id
+const sub_id = route.query.sub_id
 const groupId = route.query.group
 
 const questions = ref([])
@@ -219,7 +219,7 @@ const headers = [
 
 const form = ref({
   que_id: '',
-  sub_id: surveyId,
+  sub_id: sub_id,
   que_num: '',
   que_title: '',
   que_title_m: '',
@@ -252,7 +252,7 @@ const loadQuestions = async () => {
   loading.value = true
   const formData = new URLSearchParams()
   formData.append('action', 'fetch')
-  formData.append('id', surveyId)
+  formData.append('sub_id', sub_id)
   formData.append('group', groupId)
   console.log(formData)
   try {
@@ -291,7 +291,7 @@ const loadSurveyTitle = async () => {
   try {
     const formData = new URLSearchParams()
     formData.append('action', 'fetch')
-    formData.append('id', surveyId)
+    formData.append('id', sub_id)
     
     const response = await axios.post(surveysUrl, formData, { withCredentials: true })
     
@@ -307,7 +307,7 @@ const openModal = () => {
   isEdit.value = false
   form.value = {
     que_id: '',
-    sub_id: surveyId,
+    sub_id: sub_id,
     que_num: '',
     que_title: '',
     que_title_m: '',
@@ -377,7 +377,7 @@ const deleteQuestion = async (questionId) => {
 }
 
 onMounted(() => {
-  if (!surveyId) {
+  if (!sub_id) {
     toast.error('ไม่พบรหัสแบบสำรวจ')
     navigateTo('/admin/survey_list')
     return

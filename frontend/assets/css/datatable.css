@@ -34,6 +34,7 @@
   --easy-table-loading-mask-background-color: rgba(255, 255, 255, 0.9);
 }
 
+
 /* เพิ่มความสวยงาม */
 .customize-table table {
   border-radius: 8px;
@@ -86,6 +87,15 @@
 .customize-table .vue3-easy-data-table__main .active-page {
   background-color: #2563eb !important;
   color: white !important;
+}
+
+/* Hide rows per page selector and pagination info */
+.customize-table .pagination__rows-per-page {
+  display: none !important;
+}
+
+.customize-table .pagination__items-index {
+  display: none !important;
 }
 
 /* Responsive adjustments */

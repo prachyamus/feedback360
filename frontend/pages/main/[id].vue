@@ -82,19 +82,24 @@
 
 <script setup>
 import axios from 'axios'
+import { useToast } from 'vue-toastification'
 
 definePageMeta({
   layout: 'default'
 })
 
+const toast = useToast()
+const { showConfirm } = useConfirm()
+const route = useRoute()
 
 const searchValue = ref('')
-const rounded = ref('')
+const rounded = ref(route.params.id || '5')
 const employees = ref([])
 const loading = ref(false)
 const error = ref('')
 
 const headers = [
+  { text: 'รอบ', value: 'rounded', sortable: true },
   { text: 'รหัสพนักงาน', value: 'emp_id', sortable: true },
   { text: 'ชื่อ', value: 'emp_fname', sortable: true },
   { text: 'นามสกุล', value: 'emp_lname', sortable: true },
@@ -134,9 +139,11 @@ const loadData = async () => {
     const config = useRuntimeConfig()
     const response = await axios.post(config.public.apiBaseUrl + '/api/fetch_user_survey.php', {
       em_id: emId,
+      rounded: rounded.value
     })
     
     if (response && response.data.success) {
+      console.log(response.data)
       const data = response.data.data
       
       const importantList = data.important || []
@@ -160,13 +167,8 @@ const loadData = async () => {
   }
 }
 
-const goToSurvey = (empId, empLevel) => {
-  const query = {
-    id: empId,
-    band: empLevel,
-    rounded: rounded.value
-  }
-  navigateTo(`/main/u_survey_who?${new URLSearchParams(query).toString()}`)
+const goToSurvey = (person_id, empLevel) => {
+  navigateTo(`/main/u_survey_who?person_id=${person_id}&band=${empLevel}&rounded=${rounded.value}`)
 }
 
 onMounted(() => {

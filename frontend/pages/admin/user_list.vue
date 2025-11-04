@@ -47,14 +47,16 @@
           buttons-pagination
           theme-color="#2563eb"
           table-class-name="customize-table"
+          hide-rows-per-page
+          hide-footer-pagination-info
         >
           <template #item-actions="item">
             <div class="flex justify-center space-x-2">
-              <button @click="editUser(item)" class="text-blue-600 hover:text-blue-900">
-                <i class="fas fa-edit"></i>
+              <button @click="editUser(item)" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-pencil-alt"></i>
               </button>
-              <button @click="deleteUser(item.u_id)" class="text-red-600 hover:text-red-900">
-                <i class="fas fa-trash"></i>
+              <button @click="deleteUser(item.u_id)" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </template>
@@ -369,3 +371,4 @@ useHead({
   title: 'จัดการผู้ถูกประเมิน - FEEDBACK 360'
 })
 </script>
+
